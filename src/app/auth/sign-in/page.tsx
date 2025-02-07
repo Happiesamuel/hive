@@ -2,15 +2,12 @@
 
 import React, { useState } from "react";
 import { auth } from "@/lib/action";
-import { useRouter } from "next/navigation";
 const Page = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const router = useRouter();
   async function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
     await auth("signIn", email, password);
-    router.push("/");
   }
   return (
     <div>

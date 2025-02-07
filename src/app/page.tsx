@@ -1,7 +1,12 @@
+import Link from "next/link";
 import React from "react";
-
-const page = () => {
-  return <div>page</div>;
+// sa
+const page = async () => {
+  return (
+    <div>
+      <Link href={"/chat"}>Start chatting</Link>
+    </div>
+  );
 };
 
 export default page;
