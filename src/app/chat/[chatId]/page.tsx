@@ -3,7 +3,7 @@ import Message from "@/components/Message";
 import { getCurrentUser, getUserByEmailOrId } from "@/lib/action";
 import React from "react";
 
-const page = async ({ params }: { params: { chatId: string } }) => {
+const page = async ({ params }: { params: { chatId: Promise<string> } }) => {
   const { chatId } = await params;
   const data = await getCurrentUser();
   const user = await getUserByEmailOrId("email", data?.email || "");
