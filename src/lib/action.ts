@@ -100,5 +100,55 @@ export async function getMessage(userId: number, recipientId: number) {
 
 export const updateTypingStatus = async (typingData: TypingData) => {
   const supabase = await createClient();
-  await supabase.from("typing").upsert([typingData]);
+
+  const { error } = await supabase
+    .from("typing")
+    .upsert([typingData], { onConflict: "userId, recipientId" });
+  if (error) throw new Error(error.message);
 };
+
+export async function updateSeenMessages(userId: number) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("messages")
+    .update({ seen: true })
+    .eq("recipientId", userId)
+    .eq("userId", userId)
+    .eq("seen", false);
+  if (error) throw new Error(error.message);
+}
+
+export async function countUnseen(userId: number) {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("recipientId", userId)
+    .eq("seen", false);
+
+  return count;
+}
+export async function sam(userId: number) {
+  //avatar
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("messages")
+    .select(
+      `
+      id, 
+      text, 
+      created_at, 
+      user:userId (id, email, fullName), 
+      recipient:recipientId (id ,email, fullName),
+      seen,
+      fileUrl
+    `
+    )
+    .order("created_at", { ascending: false })
+    .eq("recipientId", userId)
+    .eq("seen", false);
+
+  return data;
+}
+// user:userId (id, displayName,fullName,email,bio),
+// recipient:recipientId ((id, displayName,fullName,email,bio)

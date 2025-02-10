@@ -1,4 +1,6 @@
 "use client";
+import { useSeenMessages } from "@/hooks/useSeenMessages";
+import { useTyping } from "@/hooks/useTyping";
 import { addMessage, updateTypingStatus } from "@/lib/action";
 import React, { useState } from "react";
 
@@ -10,6 +12,9 @@ export default function Message({
   recipient: User;
 }) {
   const [message, setMessage] = useState<string>("");
+  const isTyping = useTyping(user.id, recipient.id);
+  const messages = useSeenMessages();
+  console.log(messages);
   async function handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = {
@@ -28,15 +33,16 @@ export default function Message({
       recipientId: recipient.id,
       isTyping: true,
     });
-
     setTimeout(
-      () =>
+      () => {
         updateTypingStatus({
           userId: user.id,
           recipientId: recipient.id,
           isTyping: false,
-        }),
-      3000
+        });
+      },
+
+      2000
     );
   };
 
@@ -50,6 +56,7 @@ export default function Message({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleTyping(e)}
         />
         <button>submit</button>
+        {isTyping && <p>Typing...</p>}
       </form>
     </div>
   );
